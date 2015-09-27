@@ -113,25 +113,21 @@
 	                	</li>
 	                </ul>
 
-	                <?php if (isset($current)): ?>
-		                <ul class="pagination pagination-top">
-			            	<li>
-			                	<a id="page-number"><?= $current ?> di <?= $total ?></a>
-			        			<input type="text" id="page-input">
-			            	</li>
-				            <li class="arrow">
-				                <a href="<?= ($current > 1) ? $current - 1 : 1; ?>" class="btn"><i class="fa fa-arrow-left"></i></a>
-				            </li>
-				            <li class="arrow">
-				                <a href="<?= ($total > $current) ? $current + 1 : $current; ?>" class="btn"><i class="fa fa-arrow-right"></i></a>
-				            </li>
-				        </ul>
-					<?php endif ?>
                 </div><!-- /nagivation-bar -->
 						
     			<div class="secrets-list">
 					
-					<?php foreach ($articles as $article) : ?>
+					<?php if (empty($article)): ?>
+					
+						<div class="page-message">
+			                <h2>Ouch... questa pagina non contiene segreti...</h2>                     
+			                <p>
+			                	La pagina che hai scelto non contiene nessun segreto.<br>
+								Perchè non provi a cambiare numero di pagina, sezione oppure a cercare nel sito tramite il box di ricerca ?
+			                </p>
+						</div>
+					
+					<?php else: ?>
 
 		    			<article class="secret <?= $article->gender; ?>">
 						    <header>
@@ -156,61 +152,21 @@
 						                            
 						    <footer>
 						        <div class="social">
-						            <a class="comments" data-title="<?= $article->stitle; ?>"><strong><span class="fb-comments-count" data-href="http://beku.dev:8888/seg/<?= $article->stitle; ?>"></span></strong> commenti</a>
+						            <a class="comments opened" data-title="<?= $article->stitle; ?>"><strong><span class="fb-comments-count" data-href="<?= $_SERVER['SERVER_NAME']; ?>/seg/<?= $article->stitle; ?>"></span></strong> commenti</a>
 						            <div class="info">
 						                <span><?= timeago($article->posted); ?></span> - <a href="#secret-report" class="secret-report">segnala</a>
 						            </div>
 						        </div>
-						        <div class="comments-box" id="comments-<?= $article->stitle; ?>"></div>
+						        <div class="comments-box loaded" id="comments-<?= $article->stitle; ?>">
+									<div class="fb-comments" data-href="<?= $_SERVER['SERVER_NAME']; ?>/seg/<?= $article->stitle; ?>" data-width="600" data-numposts="10"></div>
+						        </div>
 						    </footer>
 						    
 						</article>
+
+					<?php endif ?>
 					    
-					<?php endforeach; ?>
-
 				</div><!-- /secrets-list -->
-
-
-				<?php if (empty($articles)): ?>
-					
-					<div class="page-message">
-		                <h2>Ouch... questa pagina non contiene segreti...</h2>                     
-		                <p>
-		                	La pagina che hai scelto non contiene nessun segreto.<br>
-							Perchè non provi a cambiare numero di pagina, sezione oppure a cercare nel sito tramite il box di ricerca ?
-		                </p>        
-					</div>
-				
-				<?php endif ?>
-
-				<?php if (isset($query)): ?>
-				
-					<div class="page-message">
-						<h3>Stai cercando segreti che contengono "sa"</h3>
-					</div>
-				
-				<?php endif; ?>
-
-			    <?php if (isset($current, $total)): ?>
-					
-					<div class="secrets-navigation position-bottom">
-
-						<ul class="pagination">
-			            	<li>
-			                	<a id="page-number"><?= $current ?> di <?= $total ?></a>
-			        			<input type="text" id="page-input">
-			            	</li>
-				            <li class="arrow">
-				                <a href="<?= ($current > 1) ? $current - 1 : 1; ?>" class="btn"><i class="fa fa-arrow-left"></i></a>
-				            </li>
-				            <li class="arrow">
-				                <a href="<?= ($total > $current) ? $current + 1 : $current; ?>" class="btn"><i class="fa fa-arrow-right"></i></a>
-				            </li>
-				        </ul>
-
-				    </div><!-- /bottom-pagination -->
-
-				<?php endif ?>
 
     		</div><!-- /left-side -->
     		
@@ -265,7 +221,6 @@
 	}(document, 'script', 'facebook-jssdk'));</script>
 
 	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script>var query = "<?= (isset($query)) ? $query : '' ?>";</script>
 	<script src="/js/script.js"></script>
 </body>
 

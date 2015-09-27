@@ -3,6 +3,6 @@
 use core\DB;
 
 class Model extends DB
-{	
-	protected static $table = 'articles';
+{
+
 }

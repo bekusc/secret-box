@@ -1,37 +1,41 @@
 <?php namespace app\controllers;
 
 use core\Input;
+use core\Cookie;
 use app\models\Article;
 
 class AppController extends Controller
 {
-	public function index() {
-
+	public function index($page = 1)
+    {
         $articles = new Article();
-        $articles = $articles->pagination(1);
+
+        $articles = $articles->pagination((int) $page);
         
         $this->display('index', [
             'articles' => $articles->articles,
             'total' => $articles->total,
-            'current' => 1
+            'current' => $page
         ]);
     }
     
-    public function show($stitle) {
+    public function show($stitle)
+    {
+    	$article = new Article();
+        $article = $article->where(['stitle', $stitle])->first();
 
-    	$articles = new Article();
-        $articles = $articles->where(['stitle', $stitle])->get();
-
-    	$this->display('single', ['articles' => $articles]);
+    	$this->display('single', ['article' => $article]);
     }
 
-    public function create() {   
-        
+    public function create()
+    {       
         if (Input::exists()) {
             
             $content = escape(Input::get('form_message'));
-            $age = (Input::get('age') > 80) ? 80 : (int) Input::get('age');
+            $age = (int) Input::get('age');
             $gender = (Input::get('gender') == 1) ? 'm' : 'f';
+
+            if ($age < 14) Redirect::to(404);
 
             $article = new Article();
 
@@ -43,8 +47,8 @@ class AppController extends Controller
         }
     }
 
-    public function vote() {
-
+    public function vote()
+    {
         if (Input::exists()) {
             
             $post_title = Input::get('post_title');
@@ -56,30 +60,50 @@ class AppController extends Controller
         }
     }
 
-    public function pages($id) {
-
+    public function search($query, $age, $gender, $page = 1)
+    {    
         $articles = new Article();
-        $articles = $articles->pagination((int) $id);
+
+        $articles = $articles->search($query, $age, $gender);
+
+        $articles = $articles->pagination((int) $page, $articles->count());
 
         $this->display('index', [
             'articles' => $articles->articles,
             'total' => $articles->total,
-            'current' => $id
+            'current' => (int) $page,
+            'query' => $query
         ]);
     }
 
-    public function search($query, $age, $gender, $page) {
+    public function mod()
+    {    
+        $article = new Article();
+        $article = $article->get_mod();
+
+        $this->display('mod', ['article' => $article]);
+    }
+
+    public function post_mod()
+    {    
+        if (Input::exists()) {
+            
+            $title = Input::get('title');
+            $mode = (int) Input::get('mode');
+
+            $article = new Article();
+            $article->post_mod($title, $mode);
+        }
+    }
+
+    public function hot($page = 1) {
         
         $articles = new Article();
-        $articles = $articles->search($query, $age, $gender);
 
-        $articles = $articles->pagination($page, $articles->count());
+        $articles = $articles->where(['active', 1]);
+        $articles = $articles->where(['is_hot', 1]);
+        $articles = $articles->pagination((int) $page);
 
-        $this->display('index', [
-            'articles' => $articles->articles,
-            'total' => $articles->total,
-            'current' => $page,
-            'query' => $query
-        ]);
+        dd($articles->articles);
     }
 }

@@ -470,6 +470,10 @@ input#age {
     height: 40px;
     padding: 0 10px;
 }
+.fb-comments, .fb-comments span, .fb-comments iframe {
+    min-width: 100% !important;
+    max-width: 100% !important;
+}
 .secret footer .social .comments {
     float: left;
     color: #353535;
@@ -480,13 +484,14 @@ input#age {
 }
 .secret footer .comments-box.loading {
     padding: 25px 10px;
-    background: url("http://insegreto.com/static/style/img/bg-comments-loading.gif") no-repeat center;
+    background: url("../img/bg-comments-loading.gif") no-repeat center;
 }
 .secret footer .comments-box.loaded {
     padding: 0 10px;
 }
 .secret footer .comments-box.loading, .secret footer .comments-box.loaded {
     border-top: 1px dotted #ccc;
+    display: block;
 }
 .secret footer .social .comments.opened {
     color: #27ae60;

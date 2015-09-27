@@ -6,16 +6,27 @@ class View
         $this->path = $path;
     }
 
+    public function parse($view, $variables){
+
+        return preg_replace_callback('/(\\{)(\\{)((?:[a-zA-Z]*))(\\})(\\})/', function($match) use ($variables) {
+                    return $variables[$match[3]];
+                }, $view);
+
+    }
+
     public function display($name, $data = []) {
 
-    	$path = $this->path . $name.'.php';
+    	$file_path = $this->path . $name.'.php';
 
-        if(file_exists($path)){
+        if(file_exists($file_path)) {
+
+            //echo $this->parse(file_get_contents($file_path), $data);
+        
             extract($data);
-            return require_once ($path);
+            return require_once ($file_path);
         }
         
-        throw new Exception("View does not exist: " . $path);
+        throw new \Exception("View does not exist: " . $file_path);
     }
 
 }

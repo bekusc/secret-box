@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Insegreto</title>
-	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="/css/style.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 </head>
 
@@ -18,13 +18,13 @@
 	                        
 	        <ul class="menu">                
 	            <li>
-	                <a href="/insegreto">Home</a>
+	                <a href="/">Home</a>
 				</li>
 				<li class="current-menu-item">
-	                <a href="mod.html"><span>Moderazione</span></a>
+	                <a href="/mod"><span>Moderazione</span></a>
 				</li>
 				<li>
-	                <a href="users/top-50">Utenti</a>
+	                <a href="/users/top-50">Utenti</a>
 				</li>
 
 			</ul>
@@ -88,37 +88,51 @@
     			<div class="secrets-navigation">
 	    			<ul class="section-menu">
 	                    <li class="current-menu-item">
-	                    	<a href="mod.html">Moderazione</a>
+	                    	<a href="/mod">Moderazione</a>
 	                	</li>
 	                </ul>
                 </div><!-- /nagivation-bar -->
 
     			<div class="secrets-list">
+					
+					<?php if (!$article): ?>
+					
+						<div class="page-message">
+			                <h2>Ouch... questa pagina non contiene segreti...</h2>                     
+			                <p>
+			                	La pagina che hai scelto non contiene nessun segreto.<br>
+								Perchè non provi a cambiare numero di pagina, sezione oppure a cercare nel sito tramite il box di ricerca ?
+			                </p>
+						</div>
+					
+					<?php else: ?>
 
-	    			<article class="secret male">
-					    <header>
-					        <a class="age" href="http://insegreto.it/seg/cRdc">
-					            <span>Uomo di </span> 17 <small>anni</small>
-					        </a>
-					    </header>
+    	    			<article class="secret <?= $article->gender; ?>">
+    					    <header>
+    					        <a class="age" href="/seg/<?= $article->stitle; ?>">
+    					            <span>Uomo di </span> <?= $article->age; ?> <small>anni</small>
+    					        </a>
+    					    </header>
 
-					    <div class="content">
-					        <p>nella mia camera ho un peluche che tengo sin da piccolo. mia mamma mi domanda sempre come mai lo voglia tenere, ma non sa che ogni sera prima di addormentarmi simulo un rapporto con il peluche e gli vengo pure addosso. credo di avere dei seri problemi</p>
-					    </div>
-					                            
-					    <footer>
-					        <div class="moderation" data-id="1185842">
-							    <a href="#" class="btn error">Non è un segreto</a>
-							    <a href="#" class="btn success">É un segreto</a>
+    					    <div class="content">
+    					        <p><?= $article->content; ?></p>
+    					    </div>
+    					                            
+    					    <footer>
+    					        <div class="moderation" data-title="<?= $article->stitle; ?>">
+    							    <a href="#" class="mod btn error" data-type="1">Non è un segreto</a>
+    							    <a href="#" class="mod btn success" data-type="2">É un segreto</a>
 
-							    <div class="mod-bar">
-							        <div class="like" style="width: 26.153846153846%;"></div>
-							        <div class="dislike" style="width: 73.846153846154%;"></div>
-							    </div>
-							</div>
-					    </footer>
-					    
-					</article>
+    							    <div class="mod-bar">
+    							        <div class="like" style="width: <?= $article->validity / ($article->validity + $article->invalidity) * 100; ?>%;"></div>
+    							        <div class="dislike" style="width: <?= $article->invalidity / ($article->validity + $article->invalidity) * 100; ?>%;"></div>
+    							    </div>
+    							</div>
+    					    </footer>
+    					    
+    					</article>
+
+					<?php endif; ?>
 
 					<article class="secret">
 						<div class="collapsed-message">
@@ -175,7 +189,7 @@
     </section>
 
 	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="js/script.js"></script>
+	<script src="/js/script.js"></script>
 </body>
 
 </html>

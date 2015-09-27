@@ -21,7 +21,14 @@ class DB
         $user = Config::get('mysql:username');
         $password = Config::get('mysql:password');
 
-        $this->_table = $this->table;
+        if (isset($this->table)) {
+            $this->_table = $this->table;
+        } else {
+            $called_class = get_called_class();
+            $table = strtolower(pathinfo($called_class)['basename']);
+
+            $this->_table = "{$table}s";
+        }
 
         try {
             $this->_pdo = new PDO("mysql:host={$host};dbname={$db}", $user, $password);

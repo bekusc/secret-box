@@ -2,28 +2,29 @@
 
 class Router
 {
-    private $routes = [];
-    private $data = [];
-
-    public function add($url, $action) {
-        $this->routes[$url] = $action;
+    private $routes = [],
+            $data = [];
+    
+    public function add($url, $method)
+    {
+        $this->routes[$url] = $method;
     }
 
-    public function dispatch() {
-
-        $server_url = substr($_SERVER['REQUEST_URI'], 1);
-        $server_url = strlen($server_url) ? array_filter(explode('/', $server_url)) : [];
+    public function dispatch()
+    {   
+        $server_url = ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+        $server_url = $server_url ? explode('/', $server_url) : [];
 
         foreach ($this->routes as $url => $action) {
             
-            if($this->url_maches($url, $server_url)) {
-
-                if (is_callable($action)) return $action();
-
+            if($this->url_matches($server_url, $url)) {
+                
+                if (is_callable($action)) return call_user_func_array($action, $this->data);
+                
                 $action = explode('@', $action);
                 $controller = 'app\\controllers\\'.$action[0];
                 $method = $action[1];
-
+                
                 return call_user_func_array([new $controller, $method], $this->data);
             }
         }
@@ -31,28 +32,55 @@ class Router
         Redirect::to(404);
     }
 
-    private function url_maches($url, $server_url) {
+    private function url_matches($server_url, $router_url)
+    {
+        $router_url = ltrim($router_url, '/');
+        $router_url = $router_url ? explode('/', $router_url) : [];
 
-        $url = ltrim($url, '/');
-        $url = strlen($url) ? explode('/', $url) : [];
-        $count = count($server_url);
+        $router_count = count($router_url);
+        $server_count = count($server_url);
 
-        if ($count === count($url)) {
-            $data = [];
-            for ($i=0; $i < $count; $i++) {
-                if ($url[$i][0] == ':') {
-                    $data[] = $server_url[$i];
+        $optional = (strpos(end($router_url), '?') !== FALSE);
+
+        if ($optional) {
+            
+            if ($server_count == $router_count - 1 || $server_count == $router_count) {
+
+                for ($i=0; $i < $router_count - 1; $i++) {
+                    if ($router_url[$i][0] == '{') {
+                        $this->data[] = $server_url[$i];
+                    }
+                    elseif ($server_url[$i] != $router_url[$i]) {
+                        return FALSE;
+                    }
                 }
-                elseif ($url[$i] !== $server_url[$i]) {
-                    return false;
+
+                if ($server_count == $router_count) {
+                    $this->data[] = $server_url[$server_count - 1];
                 }
+
+                return TRUE;
             }
 
-            $this->data = $data;
-            return true;
-            
+            return FALSE;
         }
+        else {
 
-        return false;
+            if ($server_count == $router_count) {
+                
+                for ($i=0; $i < $server_count; $i++) { 
+                    if ($router_url[$i][0] == '{') {
+                        $this->data[] = $server_url[$i];
+                    }
+                    elseif ($server_url[$i] != $router_url[$i]) {
+                        return FALSE;
+                    }
+                }
+
+                return TRUE;
+            }
+
+            return FALSE;
+        }
     }
 }
